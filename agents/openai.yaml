@@ -1,0 +1,4 @@
+interface:
+  display_name: "A.L.T.E.R. Learning Studio"
+  short_description: "Learn any concept with interactive motion graphics"
+  default_prompt: "Use A.L.T.E.R. to teach this concept through diagnostics, primary sources, guided practice, feedback, transfer, and a working animated HTML lesson when useful."

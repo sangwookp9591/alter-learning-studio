@@ -1,0 +1,57 @@
+{
+  "id": "probability-expected-value",
+  "title": "확률 30%면 10번 중 꼭 3번일까?",
+  "subtitle": "확률 · 시행 · 기대값 · 실제 관측의 차이",
+  "domain": "Mathematics / Probability",
+  "level": "Beginner",
+  "outcome": "독립적인 반복 시행의 기대 횟수와 실제 결과를 구분하고 기대값을 계산한다.",
+  "assumptions": [
+    "각 시행은 독립이며 성공 확률 p가 일정하다고 가정하는 이항 시행 모델입니다.",
+    "기대 횟수 n×p는 장기 평균에 대한 수학적 개념이며 실제 성공 횟수의 보장이 아닙니다.",
+    "애니메이션은 개념 구조를 보여줍니다. 실제로 동전을 무작위 시뮬레이션한 실측 데이터가 아닙니다."
+  ],
+  "nodes": [
+    {"id":"question","label":"시행 N번","detail":"같은 조건으로 반복","x":14,"y":50,"kind":"source"},
+    {"id":"chance","label":"확률 p","detail":"시행별 성공 가능성","x":39,"y":50,"kind":"control"},
+    {"id":"success","label":"성공","detail":"확률 p","x":69,"y":24,"kind":"target"},
+    {"id":"failure","label":"실패","detail":"확률 1-p","x":69,"y":76,"kind":"target"},
+    {"id":"expected","label":"기대 횟수","detail":"n × p","x":40,"y":14,"kind":"observe"}
+  ],
+  "edges": [
+    {"id":"start","from":"question","to":"chance","label":"독립 시행"},
+    {"id":"yes","from":"chance","to":"success","label":"성공 분기"},
+    {"id":"no","from":"chance","to":"failure","label":"실패 분기"},
+    {"id":"average","from":"chance","to":"expected","label":"기대값"}
+  ],
+  "scenes": [
+    {"phase":"A","title":"기대값과 결과는 다르다","lead":"확률 30%라고 해서 10번 중 꼭 3번 성공하진 않습니다.","detail":"가능성을 나타내는 숫자와 실제 관찰된 횟수를 구별하는 것이 학습 목표입니다. 여러분이라면 10번 시행 후 성공이 0번일 수도 있다고 생각하나요?","activeNodes":["question","chance"],"activeEdges":["start"],"insight":"확률은 개별 시행의 결과를 확정하지 않습니다.","question":"성공 확률 30%인 일을 10번 시도하면 정확히 3번 성공할까요?"},
+    {"phase":"L","title":"성공과 실패의 두 경로","lead":"한 번의 시행에는 성공과 실패가 있습니다.","detail":"성공 확률은 p, 실패 확률은 1−p입니다. 시행들이 서로 독립이고 같은 확률을 가진다는 조건을 명시해야 합니다.","activeNodes":["chance","success","failure"],"activeEdges":["yes","no"],"insight":"같은 확률이라고 시행마다 같은 결과가 나오는 것은 아닙니다.","question":"성공 확률이 0.3이면 실패 확률은 얼마인가요?"},
+    {"phase":"T","title":"기대 횟수를 계산해보기","lead":"독립적인 시행 N번의 기대 성공 횟수는 N × p입니다.","detail":"아래 슬라이더에서 N과 성공 확률을 바꿔 보세요. 기대값이 2.5처럼 소수가 되어도 이상하지 않습니다. 기대값은 평균 개념이기 때문입니다.","activeNodes":["question","chance","expected"],"activeEdges":["start","average"],"insight":"기대값은 모든 시행 결과를 나열했을 때의 평균적 수준을 의미합니다.","question":"20번, 성공 확률 25%라면 기대 성공 횟수는?"},
+    {"phase":"E","title":"수학적 기대와 실제 결과","lead":"기대 성공 3회여도 실제로는 1회나 5회가 가능합니다.","detail":"이 화면에는 난수를 통한 실제 시행 기록이 없습니다. 기대 횟수가 실제 횟수라는 오해를 피해야 합니다.","activeNodes":["success","failure","expected"],"activeEdges":["yes","no","average"],"insight":"계산값이 정확해도 해석이 잘못되면 결론도 잘못됩니다.","question":"기대 성공이 3회인 실험에서 실제 성공 0회가 반드시 오류일까요?"},
+    {"phase":"R","title":"마케팅 전환율과 연결","lead":"클릭 100회, 전환 확률 2%라면 기대 전환은 2회입니다.","detail":"캠페인의 예상 성과를 설명할 때 기대값은 유용합니다. 하지만 클릭 간 독립성, 시간, 사용자 특성 등이 달라지면 단순 모델의 가정이 깨질 수 있습니다.","activeNodes":["question","chance","expected"],"activeEdges":["start","average"],"insight":"확률 모델을 현실에 쓰려면 가정을 먼저 점검합니다.","question":"전환율이 계절별로 크게 달라진다면 어떤 가정을 수정해야 할까요?"}
+  ],
+  "model": {
+    "title": "기대값 계산기",
+    "description": "독립적인 동일 확률 시행을 가정합니다. 무작위 추출이 아닌 정확한 기대값 산술입니다.",
+    "inputs": [
+      {"id":"trials","label":"시행 횟수","min":5,"max":100,"step":5,"value":20,"unit":"회"},
+      {"id":"prob","label":"성공 확률","min":0,"max":100,"step":5,"value":30,"unit":"%"}
+    ],
+    "outputs": [
+      {"id":"expected-success","label":"기대 성공 횟수","unit":"회","precision":1,"expr":{"op":"divide","args":[{"op":"multiply","args":[{"var":"trials"},{"var":"prob"}]},100]}},
+      {"id":"expected-fail","label":"기대 실패 횟수","unit":"회","precision":1,"expr":{"op":"subtract","args":[{"var":"trials"},{"op":"divide","args":[{"op":"multiply","args":[{"var":"trials"},{"var":"prob"}]},100]}]}}
+    ]
+  },
+  "quiz": {
+    "question": "독립 시행 10번, 성공 확률 30%의 의미는 무엇일까요?",
+    "options": ["무조건 정확히 3번 성공한다.", "기대 성공 횟수는 3이지만 실제 성공 횟수는 달라질 수 있다.", "성공 0회는 절대로 불가능하다."],
+    "answer": 1,
+    "explanation": "이항 시행에서 성공 횟수의 기대값은 n×p=3이지만 확률적 변동으로 실제 횟수는 0~10 사이 어떤 값도 가능합니다(p=0.3)."
+  },
+  "analogy": {"domain":"마케팅 캠페인","works":"많은 독립 시도에서 전환 확률을 평균 기대 결과로 번역한다.","fails":"현실의 클릭/전환은 동일 확률·독립 시행이 아닐 수 있고, 모집단 구성의 영향을 받는다."},
+  "sources": [
+    {"title":"OpenStax Introductory Statistics — Binomial Distribution","url":"https://openstax.org/books/introductory-statistics/pages/4-3-binomial-distribution"},
+    {"title":"NIST Engineering Statistics Handbook — Binomial Distribution","url":"https://www.itl.nist.gov/div898/handbook/eda/section3/eda366i.htm"}
+  ],
+  "footnote":"수학적 기대값과 실제 관측을 구분하기 위한 개념 모델이며 가상 숫자만 사용합니다."
+}

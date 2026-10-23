@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>A.L.T.E.R. Learning Studio</title>
+  <style>
+    /* A.L.T.E.R. · Toss-inspired original learning UI. Not a Toss-owned UI kit. */
+    :root{
+      --bg:#f5f7fa;--surface:#fff;--surface2:#f5f8fd;--line:#e7ebf1;
+      --muted:#6b7684;--text:#191f28;--blue:#3182f6;--aqua:#3182f6;
+      --orange:#f59e0b;--bad:#f04452;--round:26px;
+      font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",sans-serif;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;line-height:1.58;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+    button,input,select{font:inherit}button{cursor:pointer}a{color:var(--blue)}a:hover{color:#1453aa}
+    button:focus-visible,input:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #74b7ff;outline-offset:3px}
+    .shell{max-width:1490px;margin:auto;padding:26px clamp(17px,3vw,48px) 72px}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:62px}
+    .brand{display:flex;align-items:center;gap:11px}.mark{width:43px;height:43px;display:grid;place-items:center;border-radius:15px;background:var(--blue);color:white;font-size:20px;font-weight:900;letter-spacing:-3px;padding-right:4px;box-shadow:0 8px 22px rgba(49,130,246,.19)}
+    .brand strong{font-size:15px;letter-spacing:-.04em}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.12em;margin-top:2px}.build{color:#69798b;background:white;border:1px solid var(--line);padding:9px 14px;border-radius:100px;font-weight:700;font-size:11px}
+    .intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(190px,270px);align-items:end;gap:22px;margin-bottom:35px}
+    .eyebrow{color:var(--blue);font-size:12px;font-weight:800;letter-spacing:.035em}
+    .intro h1{font-size:clamp(35px,4.1vw,64px);line-height:1.19;letter-spacing:-.065em;margin:9px 0 16px;max-width:950px;word-break:keep-all}
+    .intro p{color:var(--muted);font-size:15px;max-width:760px;margin:0;line-height:1.75;word-break:keep-all}
+    .outcome{border:1px solid var(--line);background:#fff;padding:20px;border-radius:23px;box-shadow:0 5px 17px rgba(20,46,90,.035)}
+    .outcome span{color:var(--blue);font-weight:850;font-size:10px;letter-spacing:.05em}.outcome p{font-size:13px;font-weight:700;color:#333d4b;margin:7px 0 0;line-height:1.75}
+    .grid{display:grid;grid-template-columns:minmax(0,1fr) 352px;gap:18px}
+    .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--round);overflow:hidden;box-shadow:0 10px 36px rgba(24,45,75,.035)}
+    .panelhead{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #f0f2f5;gap:12px}
+    .panelhead h2{margin:0;font-size:14px;letter-spacing:-.025em;font-weight:800}.panelhead small{font-size:11px;color:var(--muted)}
+    .indicator{display:flex;align-items:center;gap:8px;color:var(--blue);font-size:11px;font-weight:800}.indicator:before{content:"";background:#3182f6;width:7px;height:7px;border-radius:50%;box-shadow:0 0 0 5px #e8f2ff}
+    .stagewrap{overflow-x:auto;overflow-y:hidden;scrollbar-color:#d6e3f4 transparent}
+    .stage{min-width:600px;height:520px;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse 50% 55% at 48% 46%,#fff 2%,#f2f7ff 68%,#eaf2ff 100%)}
+    .stage::before{content:"";position:absolute;width:550px;height:550px;left:50%;top:40%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(49,130,246,.09),transparent 70%);pointer-events:none;z-index:0}
+    .stage::after{content:"교육용 시뮬레이션 · 실제 시스템 데이터 아님";position:absolute;left:25px;bottom:23px;color:#8492a5;font-size:11px;z-index:4}
+    .stage-top{position:absolute;top:22px;left:23px;right:23px;display:flex;align-items:center;justify-content:space-between;z-index:4;pointer-events:none}
+    .stage-scene{background:rgba(255,255,255,.82);border:1px solid #e7edfa;backdrop-filter:blur(12px);border-radius:11px;padding:8px 12px;font-size:11px;font-weight:800;color:var(--blue)}
+    .stage-caption{font-size:12px;color:#6b7684;font-weight:800}
+    .stage-beats{position:absolute;right:24px;bottom:24px;display:flex;gap:7px;z-index:4}
+    .beat{width:24px;height:5px;border-radius:10px;background:#dae4f0;transition:background .14s,width .14s}.beat.active{background:var(--blue);width:37px}.beat.done{background:#8ebeff}
+    .edges{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:1}
+    .edge{fill:none;stroke:#bbcee7;stroke-width:2.7;stroke-linecap:round;opacity:.37;transition:stroke .2s,opacity .2s,stroke-width .2s}
+    .edge.active{stroke:#3182f6;stroke-width:3.4;opacity:.95}.edge-label{fill:#5a718e;font-size:13px;font-weight:750;opacity:0;transition:opacity .18s}.edge-label.active{opacity:1}
+    .node{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);width:136px;min-height:75px;padding:12px 12px;border:1px solid #dde5f0;border-radius:18px;background:rgba(255,255,255,.86);color:#98a3b1;text-align:center;box-shadow:0 6px 23px rgba(49,93,154,.045);opacity:.50;transition:background .35s,border-color .35s,box-shadow .35s,opacity .35s,transform .35s}
+    .node.active{background:#fff;border-color:#8bbaff;color:#333d4b;box-shadow:0 8px 28px rgba(49,130,246,.14),0 0 0 4px rgba(49,130,246,.05);opacity:1;transform:translate(-50%,-50%) scale(calc(1 + var(--lift,0)))}
+    .node.arrived{box-shadow:0 0 0 8px rgba(49,130,246,.08),0 14px 34px rgba(49,130,246,.17)}
+    .node.control.active{border-color:#ffc777;background:#fffbf5}
+    .node strong{display:block;font-size:14px;line-height:1.25;letter-spacing:-.025em;white-space:nowrap}.node small{display:block;font-size:10px;color:#8b95a3;margin-top:5px;line-height:1.35}.node.active small{color:#596b80}.node-kind{color:var(--blue);font-size:9px;font-weight:900;letter-spacing:.075em;text-transform:uppercase;margin-bottom:5px}.node.control .node-kind{color:#b76b02}
+    .flow-dot{fill:var(--blue);filter:drop-shadow(0 3px 7px rgba(49,130,246,.4));opacity:0}.flow-dot.on{opacity:1}.motion-ring{fill:none;stroke:#78aefd;stroke-width:5;opacity:0}
+    .controlbar{padding:16px 19px;display:flex;gap:9px;align-items:center;flex-wrap:wrap;border-top:1px solid #edf1f7;background:#fff}
+    .btn{background:#f2f4f6;color:#333d4b;border:1px solid transparent;border-radius:13px;padding:10px 14px;font-weight:800;font-size:12px;min-width:40px;transition:background .17s,transform .17s}.btn:hover{background:#e7ecf2}.btn:active{transform:scale(.97)}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);min-width:94px}.btn.primary:hover{background:#1b64d8}.btn:disabled{opacity:.35;cursor:not-allowed}
+    .stepmeter{flex:1;min-width:145px;display:flex;gap:9px;align-items:center}.stepmeter input{width:100%;accent-color:var(--blue);cursor:pointer}.stepmeter span{color:#6b7684;min-width:40px;text-align:right;font-size:11px;font-variant-numeric:tabular-nums}.speed{border:1px solid #e5eaf0;border-radius:11px;background:white;color:#333d4b;padding:10px;font-size:12px}
+    .story{min-height:640px;display:flex;flex-direction:column}.phasebar{display:flex;gap:6px;padding:25px 22px 0}.phase{display:grid;place-items:center;width:43px;height:40px;border:1px solid #e5eaf2;border-radius:12px;color:#9da7b5;font-size:15px;font-weight:900}.phase.active{background:var(--blue);border-color:var(--blue);color:white;box-shadow:0 7px 16px rgba(49,130,246,.18)}.phase.done{background:#e9f3ff;color:var(--blue);border-color:#d2e7ff}
+    .storybody{padding:27px 23px;flex:1}.story-number{font-size:11px;color:var(--blue);font-weight:900;letter-spacing:.04em}.storybody h2{font-size:29px;line-height:1.25;letter-spacing:-.055em;margin:13px 0 17px;word-break:keep-all}.lead{font-size:15px;color:#333d4b;font-weight:800;line-height:1.65;margin:0 0 20px;word-break:keep-all}.bodytext{font-size:13px;color:#6b7684;line-height:1.85;min-height:84px}.divider{height:1px;background:var(--line);margin:24px 0}.minor{color:#8b95a1;font-size:11px;font-weight:850;margin-bottom:11px}.insight{color:var(--blue);font-weight:800;font-size:14px;line-height:1.7}.prompt{font-size:14px;line-height:1.8;color:#333d4b}.storyfoot{padding:19px 23px;border-top:1px solid #eff1f5;background:#fafcff;display:flex;gap:10px;align-items:center;color:#768392;font-size:11px}.pulse{width:7px;height:7px;background:#3182f6;border-radius:50%;flex-shrink:0}
+    .below{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.pad{padding:25px}.sectiontitle{font-size:23px;font-weight:850;letter-spacing:-.04em;margin:9px 0}.sectiondesc{color:#6b7684;font-size:13px;line-height:1.8;margin:0 0 26px}.inputgroup{margin:0 0 23px}.inputlabel{display:flex;justify-content:space-between;gap:10px;margin-bottom:11px;font-size:13px;color:#4e5968}.inputlabel strong{color:var(--blue);font-weight:850;font-variant-numeric:tabular-nums}.inputgroup input{width:100%;accent-color:var(--blue);height:10px;cursor:pointer}
+    .metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:13px 0}.metric{border:1px solid #e8eff8;background:#f5f9ff;border-radius:17px;padding:21px 16px}.metric div{font-size:11px;color:#69798b;min-height:31px}.metric strong{display:block;color:var(--blue);font-size:clamp(21px,2.5vw,31px);letter-spacing:-.045em;font-variant-numeric:tabular-nums}.metric small{font-size:11px;color:#758497}.caution{padding:14px 16px;background:#fff8eb;border-radius:12px;margin:18px 0 0;color:#8a650e;font-size:12px;line-height:1.7}
+    .quizq{font-size:16px;font-weight:800;margin:18px 0}.options{display:grid;gap:9px}.option{padding:14px 15px;border-radius:14px;background:#f7f9fc;border:1px solid #e5eaf1;color:#333d4b;text-align:left;font-size:13px;line-height:1.6}.option:hover{background:#eef5ff;border-color:#c7defe}.option.selected.correct{border-color:#32aa79;background:#e9f9f2}.option.selected.wrong{border-color:#f08a94;background:#fff0f1}.feedback{padding:15px;background:#edf6ff;border-radius:13px;color:#365576;font-size:12px;line-height:1.8;margin-top:14px}.feedback strong{display:block;color:var(--blue);margin-bottom:4px}
+    .bottom{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.smallhead{color:#768392;font-size:11px;font-weight:850;margin:0 0 12px}.sourcelinks{display:grid;gap:10px}.sourcelinks a{font-size:13px;text-decoration:none}.sourcelinks a:hover{text-decoration:underline}.assumptions{margin:0;padding-left:20px;color:#6b7684;font-size:12px;line-height:1.85}.footer{color:#8b95a1;font-size:12px;padding-top:30px;line-height:1.8}.empty{font-size:12px;color:#6b7684}.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:1060px){.grid{grid-template-columns:1fr}.story{min-height:unset}.storybody{min-height:270px}.intro{grid-template-columns:1fr}.outcome{max-width:620px}}
+    @media(max-width:720px){.shell{padding:18px 15px 55px}.header{margin-bottom:46px}.build{display:none}.intro h1{font-size:37px}.intro{margin-bottom:25px}.stage{height:470px}.below,.bottom{grid-template-columns:1fr}.panelhead{padding:16px 18px}.controlbar{padding:13px 11px;gap:6px}.btn{padding:9px 11px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.stagewrap:before{content:"도식이 넓으면 좌우로 스크롤하세요 →";display:block;padding:9px 15px;background:#f7faff;color:#8294ae;font-size:10px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.flow-dot,.motion-ring{display:none!important}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="header"><div class="brand"><div class="mark" aria-hidden="true">A·</div><div><strong>A.L.T.E.R.</strong><small>LEARNING STUDIO</small></div></div><div class="build">INTERACTIVE EXPLAINER / OFFLINE</div></header>
+    <section class="intro" aria-label="학습 소개"><div><div class="eyebrow" id="domain"></div><h1 id="title"></h1><p id="subtitle"></p></div><div class="outcome"><span>LEARNING OBJECTIVE</span><p id="outcome"></p></div></section>
+    <section class="grid" aria-label="단계별 애니메이션 학습">
+      <div class="panel"><div class="panelhead"><h2>01 / MOTION GRAPHICS</h2><div class="indicator">STORY IN MOTION</div></div><div class="stagewrap"><div class="stage" id="stage" role="img" aria-label="개념 구성요소를 연결한 방향성 다이어그램. 오른쪽에 각 단계의 텍스트 설명이 있습니다."><svg class="edges" id="edges" viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="none" stroke="#3182f6" stroke-width="1.3"/></marker></defs><g id="edgeLayer"></g><g id="particleLayer"></g><g id="ringLayer"></g></svg><div id="nodes"></div><div class="stage-top"><span class="stage-scene" id="stageScene">SCENE 01</span><span class="stage-caption" id="stageCaption">원인 발견</span></div><div class="stage-beats" id="stageBeats" aria-hidden="true"><span class="beat"></span><span class="beat"></span><span class="beat"></span><span class="beat"></span></div></div></div>
+        <div class="controlbar"><button class="btn" id="prev" aria-label="이전 장면">←</button><button class="btn primary" id="play" aria-pressed="false">▶ 재생</button><button class="btn" id="next" aria-label="다음 장면">→</button><label class="stepmeter"><span class="sr-only">장면 선택</span><input type="range" id="timeline" min="0" max="4999" value="0" step="1" aria-label="모션 타임라인 위치 이동"><span id="counter">1 / 5</span></label><label class="sr-only" for="speed">재생 속도</label><select class="speed" id="speed" aria-label="재생 속도"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></div>
+      </div>
+      <aside class="panel story" aria-label="해설과 학습 질문"><div class="phasebar" id="phases" aria-label="ALTER 다섯 단계"></div><div class="storybody" aria-live="polite"><div class="story-number" id="stepLabel"></div><h2 id="stepTitle"></h2><p class="lead" id="lead"></p><p class="bodytext" id="bodytext"></p><div class="divider"></div><div class="minor">핵심 포인트</div><div class="insight" id="insight"></div><div class="divider"></div><div class="minor">생각해 볼 질문</div><div class="prompt" id="question"></div></div><div class="storyfoot"><div class="pulse"></div>다음 장면으로 이동하기 전에 결과를 예측해보세요.</div></aside>
+    </section>
+    <section class="below" aria-label="직접 실험과 지식 확인"><div class="panel pad"><div class="eyebrow">02 / MANIPULATE</div><h2 class="sectiontitle" id="modelTitle"></h2><p class="sectiondesc" id="modelDescription"></p><div id="inputs"></div><div class="metrics" id="metrics" aria-live="polite"></div><p class="caution">이 값은 입력과 교육용 가정을 이용해 계산한 결과이며, 실측 성능 수치가 아닙니다.</p></div><div class="panel pad"><div class="eyebrow">03 / TEST ME</div><h2 class="sectiontitle">예측이 맞았나요?</h2><p class="sectiondesc">결과를 외우는 것보다 그 이유를 설명해 보세요.</p><div class="quizq" id="quizQuestion"></div><div class="options" id="options"></div><div id="feedback" aria-live="polite"></div></div></section>
+    <section class="bottom" aria-label="근거와 모델의 한계"><div class="panel pad"><div class="smallhead">SOURCES / FACT CHECK</div><div class="sourcelinks" id="sources"></div></div><div class="panel pad"><div class="smallhead">ASSUMPTIONS / LIMITATIONS</div><ul class="assumptions" id="assumptions"></ul></div></section>
+    <footer class="footer" id="footnote"></footer>
+  </main>
+  <noscript><p style="padding:20px;background:#eef5ff;color:#333d4b">자바스크립트를 켜면 단계별 설명, 계산 모델, 퀴즈를 사용할 수 있습니다. 정적 학습 내용은 함께 제공되는 lesson JSON에도 들어 있습니다.</p></noscript>
+  <script>
+    'use strict';
+    const LESSON = {"id":"cache-hit-rate","title":"캐시가 DB 요청을 얼마나 줄일까?","subtitle":"Cache Hit Rate · Key-Value · 백엔드 요청 경로","domain":"Backend Engineering / Caching","level":"Beginner","outcome":"캐시 적중률 변화가 데이터베이스 요청 건수에 미치는 영향을 계산하고 한계를 설명한다.","assumptions":["동일한 요청 집합에서 모든 요청은 한 번씩 캐시를 조회한다고 가정합니다.","캐시 미스 하나가 DB 조회 하나를 일으킨다고 가정한 교육용 산술 모델입니다.","캐시 갱신, 만료, 쓰기, 스탬피드, 핫 키, 부하에 따른 응답 시간 변화는 포함하지 않습니다.","실측 성능 그래프가 아니라 입력값에서 도출한 이론적 요청 수입니다."],"nodes":[{"id":"clients","label":"클라이언트","detail":"요청 1,000건/초","x":13,"y":48,"kind":"source"},{"id":"api","label":"API 서버","detail":"키 조회","x":39,"y":48,"kind":"process"},{"id":"cache","label":"캐시","detail":"메모리 KV","x":64,"y":25,"kind":"control"},{"id":"db","label":"DB","detail":"영속 데이터","x":87,"y":75,"kind":"target"},{"id":"result","label":"응답","detail":"조회 결과","x":64,"y":74,"kind":"observe"}],"edges":[{"id":"call","from":"clients","to":"api","label":"GET"},{"id":"lookup","from":"api","to":"cache","label":"Cache lookup"},{"id":"hit","from":"cache","to":"result","label":"Hit"},{"id":"miss","from":"cache","to":"db","label":"Miss"},{"id":"return","from":"db","to":"result","label":"DB result"}],"scenes":[{"phase":"A","title":"캐시는 왜 넣을까?","lead":"반복 조회를 매번 DB까지 보내지 않기 위해서입니다.","detail":"캐시는 빈번한 읽기 결과를 가까운 저장소에 두어 같은 데이터를 더 빨리 제공할 수 있게 합니다. 일관성·무효화 정책도 고려해야 합니다.","activeNodes":["clients","api","cache","db"],"activeEdges":["call","lookup"],"insight":"캐시가 있다고 데이터베이스 요청이 항상 0이 되는 것은 아닙니다.","question":"100개의 요청 중 캐시 적중이 80개라면 미스는 몇 개일까요?"},{"phase":"L","title":"캐시 히트 경로","lead":"찾는 키가 있으면 DB까지 가지 않습니다.","detail":"적중률(hit rate)은 전체 캐시 조회 중 캐시에서 처리된 비율입니다. 캐시의 유효성 정책이 올바르다는 전제에서 유용합니다.","activeNodes":["api","cache","result"],"activeEdges":["lookup","hit"],"insight":"높은 적중률은 DB 요청 수 감소를 뜻할 수 있지만 응답 지연을 직접 보장하진 않습니다.","question":"적중한 데이터를 사용하면 어떤 네트워크 단계를 생략할 수 있을까요?"},{"phase":"T","title":"캐시 미스 경로","lead":"키가 없으면 DB에서 조회해야 합니다.","detail":"DB에서 읽은 값을 캐시에 채울 수 있지만 정책과 TTL에 따라 달라집니다. 슬라이더로 hit rate를 낮추고 DB 부하가 어떻게 바뀌는지 확인해 보세요.","activeNodes":["api","cache","db","result"],"activeEdges":["lookup","miss","return"],"insight":"캐시 미스가 급증할 때 DB에 요청이 몰리는 상황을 감안해야 합니다.","question":"캐시 hit rate가 90%에서 50%로 내려가면 DB 조회량은 몇 배가 될까요?"},{"phase":"E","title":"적중률을 수치로 비교","lead":"가정이 같다면 DB 조회 요청 수 = 총 요청 수 × 미스 비율입니다.","detail":"아래 값은 요청량과 적중률에 의한 단순 산술입니다. 실제로는 키 분포와 요청 특성에 따라 성능이 달라집니다.","activeNodes":["clients","api","cache","db","result"],"activeEdges":["call","lookup","hit","miss","return"],"insight":"그럴듯한 애니메이션보다 명확한 가정과 정확한 계산이 중요합니다.","question":"캐시 hit rate가 95%이면 1,000 req/s 중 DB로 가는 요청은 몇 개일까요?"},{"phase":"R","title":"동네 편의점 재고처럼","lead":"자주 필요한 물건을 가까이 두면 먼 창고 방문을 줄입니다.","detail":"캐시가 편의점 진열대, DB가 창고처럼 보일 수 있습니다. 하지만 컴퓨터 캐시는 TTL, 동시성, 일관성 문제를 가진다는 점에서 비유가 깨집니다.","activeNodes":["cache","db","result"],"activeEdges":["hit","miss","return"],"insight":"캐시 무효화가 어렵다는 사실까지 설명할 수 있어야 개념을 제대로 이해한 것입니다.","question":"오래된 캐시 데이터가 잘못된 결정을 만들 수 있는 서비스는 무엇일까요?"}],"model":{"title":"적중률 실험 — DB 요청 수","description":"요청 1건마다 캐시 조회 1회, 캐시 미스마다 DB 조회 1회라는 단순 모델입니다.","inputs":[{"id":"rps","label":"전체 요청","min":100,"max":3000,"step":100,"value":1000,"unit":"req/s"},{"id":"hit-rate","label":"캐시 적중률","min":0,"max":100,"step":5,"value":80,"unit":"%"}],"outputs":[{"id":"hits","label":"캐시 적중 요청","unit":"req/s","precision":0,"expr":{"op":"divide","args":[{"op":"multiply","args":[{"var":"rps"},{"var":"hit-rate"}]},100]}},{"id":"db-queries","label":"DB까지 가는 요청","unit":"req/s","precision":0,"expr":{"op":"multiply","args":[{"var":"rps"},{"op":"subtract","args":[1,{"op":"divide","args":[{"var":"hit-rate"},100]}]}]}}]},"quiz":{"question":"전체 1,000 req/s, 캐시 hit rate 80%라면 이 단순 모델에서 DB 조회는?","options":["800 req/s","200 req/s","1,000 req/s","0 req/s"],"answer":1,"explanation":"미스율은 20%이므로 DB 조회는 1,000 × 0.2 = 200 req/s입니다. 실제 서비스는 미스와 DB 조회가 반드시 1:1이 아닐 수 있습니다."},"analogy":{"domain":"편의점과 물류 창고","works":"가까운 곳에 자주 필요한 항목을 배치해 먼 저장소 접근을 줄인다.","fails":"TTL, stale read, 동시성, 무효화 정책은 단순 매장 비유로 설명되지 않는다."},"sources":[{"title":"Redis caching overview","url":"https://redis.io/docs/latest/develop/use/patterns/"},{"title":"AWS Caching strategies","url":"https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/"}],"footnote":"이 모형은 저장/조회 방식 학습용입니다. 실제 캐시·DB에 접속하지 않습니다."};
+    (() => {
+      const $ = id => document.getElementById(id);
+      const modes = {source:'INPUT',process:'PROCESS',target:'OUTPUT',control:'CONTROL',observe:'OBSERVE'};
+      const stage = $('stage'), edgeLayer = $('edgeLayer'), particleLayer = $('particleLayer'), ringLayer = $('ringLayer');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const state = {scene:0,playing:false,speed:1,stamp:0,frame:0,elapsed:0,particles:[],rings:[],inputs:{}};
+      const SCENE_MS=5600;
+      const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+      const ease=v=>{const x=clamp(v);return x*x*(3-2*x);};
+      const addText = (parent,tag,content,cls) => { const e=document.createElement(tag);if(cls)e.className=cls;e.textContent=String(content);parent.appendChild(e);return e;};
+      $('title').textContent=LESSON.title;document.title=LESSON.title+' — A.L.T.E.R.';
+      $('domain').textContent=LESSON.domain+'  /  '+LESSON.level;
+      $('subtitle').textContent=LESSON.subtitle;
+      $('outcome').textContent=LESSON.outcome;
+      $('footnote').textContent=(LESSON.footnote||'')+'  •  A.L.T.E.R. — Academic Advisor · Librarian · Tutor · Editor · Roommate';
+      LESSON.assumptions.forEach(a=>addText($('assumptions'),'li',a));
+      LESSON.sources.forEach(s=> {const a=addText($('sources'),'a','↗ '+s.title);a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';});
+      const phaseDescription={A:'Advisor',L:'Librarian',T:'Tutor',E:'Editor',R:'Roommate'};
+      ['A','L','T','E','R'].forEach(letter=>{const tag=addText($('phases'),'span',letter,'phase');tag.title=phaseDescription[letter];tag.setAttribute('aria-label',phaseDescription[letter]);});
+      const svgNS='http://www.w3.org/2000/svg';
+      const ns=(tag,attrs)=>{const e=document.createElementNS(svgNS,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));return e;};
+      const nodes = new Map(LESSON.nodes.map(n=>[n.id,n]));
+      const elementNodes=new Map();const pathEdges=new Map();const labelEdges=new Map();
+      LESSON.nodes.forEach(n=>{const el=document.createElement('div');el.className='node '+n.kind;el.style.left=n.x+'%';el.style.top=n.y+'%';addText(el,'div',modes[n.kind]||'NODE','node-kind');addText(el,'strong',n.label);addText(el,'small',n.detail);$('nodes').appendChild(el);elementNodes.set(n.id,el);});
+      LESSON.edges.forEach(e=>{
+        const from=nodes.get(e.from),to=nodes.get(e.to);const x1=from.x*10,y1=from.y*5.6,x2=to.x*10,y2=to.y*5.6;
+        const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1;
+        const trim=70;const sx=x1+dx/len*trim,sy=y1+dy/len*trim,ex=x2-dx/len*trim,ey=y2-dy/len*trim;
+        const path=ns('path',{d:`M ${sx} ${sy} L ${ex} ${ey}`,class:'edge','data-edge':e.id});edgeLayer.appendChild(path);pathEdges.set(e.id,path);
+        const tag=ns('text',{x:(sx+ex)/2,y:(sy+ey)/2-10,class:'edge-label','text-anchor':'middle'});tag.textContent=e.label;edgeLayer.appendChild(tag);labelEdges.set(e.id,tag);
+      });
+      $('timeline').max=String(LESSON.scenes.length*1000-1);
+      const phasesShort={A:'목표 정의',L:'증거 탐색',T:'원리 실험',E:'결과 검증',R:'응용'};
+      const motionBeats=['원인','변화','전달','결과'];
+      function resetParticles(){
+        particleLayer.replaceChildren();ringLayer.replaceChildren();state.particles=[];state.rings=[];
+        const scene=LESSON.scenes[state.scene];
+        scene.activeEdges.forEach((id,i)=>{
+          const path=pathEdges.get(id);if(!path)return;
+          const dot=ns('circle',{r:7,class:'flow-dot'});particleLayer.appendChild(dot);
+          state.particles.push({id,path,dot,offset:i*.075,length:path.getTotalLength()});
+        });
+        scene.activeNodes.forEach(id=>{
+          const n=nodes.get(id);if(!n)return;
+          const circle=ns('circle',{cx:n.x*10,cy:n.y*5.6,r:56,class:'motion-ring'});
+          ringLayer.appendChild(circle);state.rings.push({id,circle});
+        });
+      }
+      function renderMotion(raw){
+        const p=clamp(raw), reduced=reduceMotion.matches;
+        const effective=reduced?1:p;
+        const step=Math.min(3,Math.floor(effective*4));
+        [...$('stageBeats').children].forEach((el,i)=>{
+          el.classList.toggle('done',i<step);
+          el.classList.toggle('active',i===step);
+        });
+        $('stageCaption').textContent=motionBeats[step]+' · '+phasesShort[LESSON.scenes[state.scene].phase];
+        $('timeline').value=String(Math.min(LESSON.scenes.length*1000-1,state.scene*1000+Math.round(p*999)));
+        pathEdges.forEach((path,id)=>{
+          if(!LESSON.scenes[state.scene].activeEdges.includes(id))return;
+          const length=path.getTotalLength(), progress=ease((effective-.16)/.58);
+          path.style.strokeDasharray=String(length);
+          path.style.strokeDashoffset=String(length*(1-progress));
+        });
+        state.particles.forEach((part,i)=>{
+          const from=.25+part.offset,to=.84+part.offset;
+          const travel=ease((effective-from)/(to-from));
+          const pt=part.path.getPointAtLength(travel*part.length);
+          part.dot.setAttribute('cx',pt.x);part.dot.setAttribute('cy',pt.y);
+          const show=!reduced && effective>=from && effective<=to;
+          part.dot.style.opacity=show?'1':'0';
+          part.dot.setAttribute('r',String(6.5+2*Math.sin(Math.PI*travel)));
+        });
+        state.rings.forEach(({id,circle})=>{
+          const isDestination=LESSON.scenes[state.scene].activeEdges.some(eid=>LESSON.edges.find(edge=>edge.id===eid)?.to===id);
+          const pulse=ease((effective-(isDestination?.77:.05))/.17);
+          circle.setAttribute('r',String(50+pulse*27));
+          circle.style.opacity=(!reduced&&isDestination&&pulse>0&&pulse<1)?String((1-pulse)*.4):'0';
+          const node=elementNodes.get(id);
+          node.style.setProperty('--lift',String(reduced?0:Math.sin(Math.PI*clamp((effective-.12)/.72))*.055));
+          node.classList.toggle('arrived',!reduced&&isDestination&&effective>.8);
+        });
+      }
+      function renderScene(index,progress=0){
+        state.scene=Math.max(0,Math.min(LESSON.scenes.length-1,index));
+        state.elapsed=clamp(progress)*SCENE_MS;
+        const s=LESSON.scenes[state.scene];const selected=new Set(s.activeNodes);const activeEdges=new Set(s.activeEdges);
+        elementNodes.forEach((element,id)=>{element.classList.toggle('active',selected.has(id));element.classList.remove('arrived');element.style.removeProperty('--lift');});
+        pathEdges.forEach((path,id)=>{
+          path.classList.toggle('active',activeEdges.has(id));path.style.strokeDasharray='';path.style.strokeDashoffset='';
+          if(activeEdges.has(id))path.setAttribute('marker-end','url(#arrow)');else path.removeAttribute('marker-end');
+        });
+        labelEdges.forEach((label,id)=>label.classList.toggle('active',activeEdges.has(id)));
+        $('stepLabel').textContent=`SCENE ${String(state.scene+1).padStart(2,'0')} / ${String(LESSON.scenes.length).padStart(2,'0')}  ·  ${phaseDescription[s.phase].toUpperCase()}`;
+        $('stageScene').textContent=`SCENE ${String(state.scene+1).padStart(2,'0')}  /  ${String(LESSON.scenes.length).padStart(2,'0')}`;
+        $('stepTitle').textContent=s.title;$('lead').textContent=s.lead;$('bodytext').textContent=s.detail;$('insight').textContent=s.insight;$('question').textContent=s.question;
+        [...$('phases').children].forEach((node,i)=>{node.classList.toggle('active','ALTER'[i]===s.phase);node.classList.toggle('done',i<('ALTER'.indexOf(s.phase)));});
+        $('counter').textContent=`${state.scene+1} / ${LESSON.scenes.length}`;
+        $('prev').disabled=state.scene===0;$('next').disabled=state.scene===LESSON.scenes.length-1;
+        resetParticles();renderMotion(progress);
+      }
+      function setPlaying(flag){state.playing=flag;$('play').textContent=flag?'❚❚ 일시정지':'▶ 재생';$('play').setAttribute('aria-pressed',String(flag));state.stamp=0;}
+      function tick(timestamp){
+        if(!state.stamp)state.stamp=timestamp;
+        const delta=Math.min(100,timestamp-state.stamp);state.stamp=timestamp;
+        if(state.playing){
+          state.elapsed+=delta*state.speed;
+          if(state.elapsed>=SCENE_MS){
+            if(state.scene===LESSON.scenes.length-1){state.elapsed=SCENE_MS;renderMotion(1);setPlaying(false);}
+            else renderScene(state.scene+1,0);
+          }else renderMotion(state.elapsed/SCENE_MS);
+        }
+        state.frame=requestAnimationFrame(tick);
+      }
+      $('prev').addEventListener('click',()=>{renderScene(state.scene-1);setPlaying(false);});
+      $('next').addEventListener('click',()=>{renderScene(state.scene+1);setPlaying(false);});
+      $('timeline').addEventListener('input',e=>{
+        const value=Number(e.target.value),nextScene=Math.min(LESSON.scenes.length-1,Math.floor(value/1000));
+        const progress=(value%1000)/999;
+        if(nextScene!==state.scene)renderScene(nextScene,progress);else{state.elapsed=progress*SCENE_MS;renderMotion(progress);}
+        setPlaying(false);
+      });
+      $('play').addEventListener('click',()=>{
+        if(!state.playing&&state.scene===LESSON.scenes.length-1&&state.elapsed>=SCENE_MS){renderScene(0);}
+        setPlaying(!state.playing);
+      });
+      $('speed').addEventListener('change',e=>state.speed=Number(e.target.value));
+      reduceMotion.addEventListener?.('change',()=>renderMotion(state.elapsed/SCENE_MS));
+      document.addEventListener('keydown',e=>{
+        const tag=e.target.tagName;if(['INPUT','TEXTAREA','SELECT','BUTTON'].includes(tag))return;
+        if(e.key==='ArrowRight'){renderScene(state.scene+1);setPlaying(false);}
+        if(e.key==='ArrowLeft'){renderScene(state.scene-1);setPlaying(false);}
+        if(e.key===' '){e.preventDefault();setPlaying(!state.playing);}
+      });
+      const ops={add:xs=>xs.reduce((a,b)=>a+b,0),subtract:xs=>xs[0]-xs[1],multiply:xs=>xs.reduce((a,b)=>a*b,1),divide:xs=>xs[1]===0?NaN:xs[0]/xs[1],min:xs=>Math.min(...xs),max:xs=>Math.max(...xs),ceil:xs=>Math.ceil(xs[0]),floor:xs=>Math.floor(xs[0]),round:xs=>Math.round(xs[0]),clamp:xs=>Math.max(xs[1],Math.min(xs[2],xs[0]))};
+      function compute(expr,depth=0){if(depth>20)return NaN;if(typeof expr==='number')return expr;if(expr && typeof expr==='object' && typeof expr.var==='string')return Number(state.inputs[expr.var]);if(expr && typeof expr.op==='string' && ops[expr.op] && Array.isArray(expr.args))return ops[expr.op](expr.args.map(a=>compute(a,depth+1)));return NaN;}
+      const model=LESSON.model;$('modelTitle').textContent=model.title;$('modelDescription').textContent=model.description;
+      const metricValues=new Map();model.outputs.forEach(m=>{const box=document.createElement('div');box.className='metric';addText(box,'div',m.label);const big=addText(box,'strong','—');addText(box,'small',m.unit);$('metrics').appendChild(box);metricValues.set(m.id,big);});
+      function recalc(){model.outputs.forEach(m=>{const value=compute(m.expr);metricValues.get(m.id).textContent=Number.isFinite(value)?new Intl.NumberFormat('ko-KR',{minimumFractionDigits:m.precision,maximumFractionDigits:m.precision}).format(value):'—';});}
+      model.inputs.forEach(m=>{state.inputs[m.id]=m.value;const group=document.createElement('div');group.className='inputgroup';const label=document.createElement('label');label.className='inputlabel';label.htmlFor='var-'+m.id;addText(label,'span',m.label);const strong=addText(label,'strong',m.value.toLocaleString('ko-KR')+' '+m.unit);group.appendChild(label);const input=document.createElement('input');input.type='range';input.id='var-'+m.id;input.min=m.min;input.max=m.max;input.step=m.step;input.value=m.value;input.addEventListener('input',()=>{state.inputs[m.id]=Number(input.value);strong.textContent=Number(input.value).toLocaleString('ko-KR')+' '+m.unit;recalc();});group.appendChild(input);$('inputs').appendChild(group);});recalc();
+      const quiz=LESSON.quiz;$('quizQuestion').textContent=quiz.question;
+      quiz.options.forEach((choice,i)=>{const button=document.createElement('button');button.type='button';button.className='option';button.textContent=String.fromCharCode(65+i)+'. '+choice;button.addEventListener('click',()=>{document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected','correct','wrong'));button.classList.add('selected',i===quiz.answer?'correct':'wrong');$('feedback').replaceChildren();const f=document.createElement('div');f.className='feedback';addText(f,'strong',i===quiz.answer?'정답입니다.':'다시 살펴봅시다.');addText(f,'div',quiz.explanation);$('feedback').appendChild(f);});$('options').appendChild(button);});
+      renderScene(0);state.frame=requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>

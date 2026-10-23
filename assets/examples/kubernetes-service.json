@@ -1,0 +1,273 @@
+{
+  "id": "kubernetes-service",
+  "title": "Pod가 늘어나면 요청은 어디로 갈까?",
+  "subtitle": "Kubernetes Service · HPA · EndpointSlice · 요청 분산",
+  "domain": "Infrastructure / Kubernetes",
+  "level": "Intermediate",
+  "outcome": "HPA로 Pod를 늘린 후 새 요청이 배분되기까지의 단계와 예외를 설명한다.",
+  "assumptions": [
+    "아래 계산은 요청이 여러 Pod에 균등하게 분산된다고 가정한 교육용 산술 모델입니다.",
+    "실제 Kubernetes Service의 분산은 네트워크 구현과 연결 재사용에 따라 다르며 CPU가 낮은 Pod를 항상 선택하지 않습니다.",
+    "CPU를 기준으로 HPA가 Pod 수를 늘리는 과정과 Service가 요청을 연결하는 과정은 서로 다릅니다.",
+    "로컬 모형이며 실제 Kubernetes, ALB 또는 클러스터 측정값이 아닙니다."
+  ],
+  "nodes": [
+    {
+      "id": "client",
+      "label": "클라이언트",
+      "detail": "새 HTTP 요청",
+      "x": 12,
+      "y": 50,
+      "kind": "source"
+    },
+    {
+      "id": "service",
+      "label": "Service",
+      "detail": "대상 Pod 연결",
+      "x": 36,
+      "y": 50,
+      "kind": "process"
+    },
+    {
+      "id": "poda",
+      "label": "Pod A",
+      "detail": "기존 Pod",
+      "x": 66,
+      "y": 20,
+      "kind": "target"
+    },
+    {
+      "id": "podb",
+      "label": "Pod B",
+      "detail": "기존 Pod",
+      "x": 66,
+      "y": 50,
+      "kind": "target"
+    },
+    {
+      "id": "podc",
+      "label": "Pod C",
+      "detail": "신규 · Ready",
+      "x": 66,
+      "y": 80,
+      "kind": "target"
+    },
+    {
+      "id": "hpa",
+      "label": "HPA",
+      "detail": "Pod 개수 결정",
+      "x": 35,
+      "y": 13,
+      "kind": "control"
+    }
+  ],
+  "edges": [
+    {
+      "id": "entry",
+      "from": "client",
+      "to": "service",
+      "label": "요청"
+    },
+    {
+      "id": "to-a",
+      "from": "service",
+      "to": "poda",
+      "label": "대상 A"
+    },
+    {
+      "id": "to-b",
+      "from": "service",
+      "to": "podb",
+      "label": "대상 B"
+    },
+    {
+      "id": "to-c",
+      "from": "service",
+      "to": "podc",
+      "label": "신규 대상"
+    },
+    {
+      "id": "scale",
+      "from": "hpa",
+      "to": "podc",
+      "label": "추가 생성"
+    }
+  ],
+  "scenes": [
+    {
+      "phase": "A",
+      "title": "먼저 역할을 분리해보자",
+      "lead": "HPA와 Service는 서로 다른 결정을 합니다.",
+      "detail": "HPA는 원하는 Pod 개수를 변경합니다. Service는 새로운 연결이 전달될 Pod를 찾는 추상화입니다.",
+      "activeNodes": [
+        "hpa",
+        "service"
+      ],
+      "activeEdges": [],
+      "insight": "'몇 개 실행할까?'와 '어디에 보낼까?'는 별개의 문제입니다.",
+      "question": "새 Pod를 생성한 주체가 각 HTTP 요청을 직접 선택할까요?"
+    },
+    {
+      "phase": "L",
+      "title": "기존에는 두 Pod가 처리 중",
+      "lead": "Service는 준비된 Pod A/B로 새로운 연결을 보냅니다.",
+      "detail": "EndpointSlice에는 Service의 대상이 되는 Pod 주소가 반영됩니다. 실제 연결 분산 세부 방식은 구현별로 다릅니다.",
+      "activeNodes": [
+        "client",
+        "service",
+        "poda",
+        "podb"
+      ],
+      "activeEdges": [
+        "entry",
+        "to-a",
+        "to-b"
+      ],
+      "insight": "'균등'은 아래 슬라이더의 가정이지 모든 실서비스의 보장 조건이 아닙니다.",
+      "question": "A에서 처리 중이던 긴 요청을 B로 자동 이동시킬까요?"
+    },
+    {
+      "phase": "T",
+      "title": "HPA가 Pod C를 추가",
+      "lead": "CPU 목표 초과 등을 관측해 replica 수를 증가시킵니다.",
+      "detail": "Scheduler가 새 Pod를 Node에 배치하고 kubelet이 실행합니다. Ready가 되기 전에는 일반적으로 Service 트래픽 대상에 포함되지 않습니다.",
+      "activeNodes": [
+        "hpa",
+        "podc"
+      ],
+      "activeEdges": [
+        "scale"
+      ],
+      "insight": "Pod의 생성과 트래픽 수신 사이에는 준비 확인 단계가 있습니다.",
+      "question": "Pod C가 아직 Ready가 아니라면 새 요청을 받아도 될까요?"
+    },
+    {
+      "phase": "E",
+      "title": "준비 완료 후 새 요청 유입",
+      "lead": "Pod C가 Ready가 되면 서비스 대상에 포함됩니다.",
+      "detail": "EndpointSlice 변경 등이 네트워크 구성에 반영되면 새 연결이 Pod C로도 전달될 수 있습니다. 기존 연결은 자동으로 이전되지 않습니다.",
+      "activeNodes": [
+        "client",
+        "service",
+        "poda",
+        "podb",
+        "podc"
+      ],
+      "activeEdges": [
+        "entry",
+        "to-a",
+        "to-b",
+        "to-c"
+      ],
+      "insight": "새 Pod를 추가해도 keep-alive, sticky session, 장시간 작업 등의 영향으로 CPU가 즉시 균등해지는 것은 아닙니다.",
+      "question": "요청 1,200건/초에 Pod가 3개라면 균등 가정에서 Pod당 몇 건/초인가요?"
+    },
+    {
+      "phase": "R",
+      "title": "레스토랑의 주문 접수와 닮았다",
+      "lead": "작업대 추가와 주문 배정은 다른 운영 과정입니다.",
+      "detail": "HPA는 새 작업대를 확보하는 결정, Service는 새로운 주문을 여러 작업대로 보내는 통로라고 볼 수 있습니다. 다만 네트워크 연결과 HTTP 상태를 레스토랑 비유로 완벽히 설명할 수는 없습니다.",
+      "activeNodes": [
+        "service",
+        "poda",
+        "podb",
+        "podc"
+      ],
+      "activeEdges": [
+        "to-a",
+        "to-b",
+        "to-c"
+      ],
+      "insight": "작업대가 늘어도 이미 진행 중인 주문은 자동 이전되지 않습니다.",
+      "question": "하나의 Pod에 긴 WebSocket 연결이 몰리면 새 Pod가 생겨도 무슨 일이 일어날까요?"
+    }
+  ],
+  "model": {
+    "title": "요청 수와 Pod 개수 바꿔 보기",
+    "description": "균등 분산을 가정한 '평균 신규 요청량' 계산입니다. 실제 CPU 사용률이나 로드 밸런서 측정값이 아닙니다.",
+    "inputs": [
+      {
+        "id": "rps",
+        "label": "초당 신규 요청",
+        "min": 100,
+        "max": 2400,
+        "step": 100,
+        "value": 1200,
+        "unit": "req/s"
+      },
+      {
+        "id": "pods",
+        "label": "준비된 Pod 수",
+        "min": 1,
+        "max": 8,
+        "step": 1,
+        "value": 3,
+        "unit": "개"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "per-pod",
+        "label": "Pod당 평균 신규 요청",
+        "unit": "req/s",
+        "precision": 0,
+        "expr": {
+          "op": "divide",
+          "args": [
+            {
+              "var": "rps"
+            },
+            {
+              "var": "pods"
+            }
+          ]
+        }
+      },
+      {
+        "id": "share",
+        "label": "Pod당 요청 비중",
+        "unit": "%",
+        "precision": 1,
+        "expr": {
+          "op": "divide",
+          "args": [
+            100,
+            {
+              "var": "pods"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "quiz": {
+    "question": "새로운 Pod C가 Ready가 되면 무엇이 맞을까요?",
+    "options": [
+      "Service가 모든 기존 연결을 자동으로 C에 옮긴다.",
+      "C는 새로운 연결을 받을 수 있지만, 기존 연결이 자동으로 이동하지는 않는다.",
+      "HPA가 매 HTTP 요청의 대상을 CPU 기준으로 결정한다."
+    ],
+    "answer": 1,
+    "explanation": "HPA는 replica 수를 조정하고 Service/네트워크 계층이 연결을 분산합니다. 기존 연결/장시간 요청이 C로 자동 이관되지는 않습니다."
+  },
+  "analogy": {
+    "domain": "음식점 작업대",
+    "works": "주문량 증가에 따라 작업대를 늘리고 신규 주문의 전달 대상을 확장한다.",
+    "fails": "실제 네트워크의 연결 재사용, EndpointSlice, health check는 음식점 비유에 정확히 대응하지 않는다."
+  },
+  "sources": [
+    {
+      "title": "Kubernetes Service",
+      "url": "https://kubernetes.io/docs/concepts/services-networking/service/"
+    },
+    {
+      "title": "EndpointSlices",
+      "url": "https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/"
+    },
+    {
+      "title": "Horizontal Pod Autoscaling",
+      "url": "https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/"
+    }
+  ],
+  "footnote": "이 플레이어는 로컬 HTML 학습 시뮬레이션입니다. 실제 클러스터 리소스를 생성하거나 트래픽을 보내지 않습니다."
+}

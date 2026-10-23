@@ -1,0 +1,289 @@
+{
+  "id": "cache-hit-rate",
+  "title": "캐시가 DB 요청을 얼마나 줄일까?",
+  "subtitle": "Cache Hit Rate · Key-Value · 백엔드 요청 경로",
+  "domain": "Backend Engineering / Caching",
+  "level": "Beginner",
+  "outcome": "캐시 적중률 변화가 데이터베이스 요청 건수에 미치는 영향을 계산하고 한계를 설명한다.",
+  "assumptions": [
+    "동일한 요청 집합에서 모든 요청은 한 번씩 캐시를 조회한다고 가정합니다.",
+    "캐시 미스 하나가 DB 조회 하나를 일으킨다고 가정한 교육용 산술 모델입니다.",
+    "캐시 갱신, 만료, 쓰기, 스탬피드, 핫 키, 부하에 따른 응답 시간 변화는 포함하지 않습니다.",
+    "실측 성능 그래프가 아니라 입력값에서 도출한 이론적 요청 수입니다."
+  ],
+  "nodes": [
+    {
+      "id": "clients",
+      "label": "클라이언트",
+      "detail": "요청 1,000건/초",
+      "x": 13,
+      "y": 48,
+      "kind": "source"
+    },
+    {
+      "id": "api",
+      "label": "API 서버",
+      "detail": "키 조회",
+      "x": 39,
+      "y": 48,
+      "kind": "process"
+    },
+    {
+      "id": "cache",
+      "label": "캐시",
+      "detail": "메모리 KV",
+      "x": 64,
+      "y": 25,
+      "kind": "control"
+    },
+    {
+      "id": "db",
+      "label": "DB",
+      "detail": "영속 데이터",
+      "x": 87,
+      "y": 75,
+      "kind": "target"
+    },
+    {
+      "id": "result",
+      "label": "응답",
+      "detail": "조회 결과",
+      "x": 64,
+      "y": 74,
+      "kind": "observe"
+    }
+  ],
+  "edges": [
+    {
+      "id": "call",
+      "from": "clients",
+      "to": "api",
+      "label": "GET"
+    },
+    {
+      "id": "lookup",
+      "from": "api",
+      "to": "cache",
+      "label": "Cache lookup"
+    },
+    {
+      "id": "hit",
+      "from": "cache",
+      "to": "result",
+      "label": "Hit"
+    },
+    {
+      "id": "miss",
+      "from": "cache",
+      "to": "db",
+      "label": "Miss"
+    },
+    {
+      "id": "return",
+      "from": "db",
+      "to": "result",
+      "label": "DB result"
+    }
+  ],
+  "scenes": [
+    {
+      "phase": "A",
+      "title": "캐시는 왜 넣을까?",
+      "lead": "반복 조회를 매번 DB까지 보내지 않기 위해서입니다.",
+      "detail": "캐시는 빈번한 읽기 결과를 가까운 저장소에 두어 같은 데이터를 더 빨리 제공할 수 있게 합니다. 일관성·무효화 정책도 고려해야 합니다.",
+      "activeNodes": [
+        "clients",
+        "api",
+        "cache",
+        "db"
+      ],
+      "activeEdges": [
+        "call",
+        "lookup"
+      ],
+      "insight": "캐시가 있다고 데이터베이스 요청이 항상 0이 되는 것은 아닙니다.",
+      "question": "100개의 요청 중 캐시 적중이 80개라면 미스는 몇 개일까요?"
+    },
+    {
+      "phase": "L",
+      "title": "캐시 히트 경로",
+      "lead": "찾는 키가 있으면 DB까지 가지 않습니다.",
+      "detail": "적중률(hit rate)은 전체 캐시 조회 중 캐시에서 처리된 비율입니다. 캐시의 유효성 정책이 올바르다는 전제에서 유용합니다.",
+      "activeNodes": [
+        "api",
+        "cache",
+        "result"
+      ],
+      "activeEdges": [
+        "lookup",
+        "hit"
+      ],
+      "insight": "높은 적중률은 DB 요청 수 감소를 뜻할 수 있지만 응답 지연을 직접 보장하진 않습니다.",
+      "question": "적중한 데이터를 사용하면 어떤 네트워크 단계를 생략할 수 있을까요?"
+    },
+    {
+      "phase": "T",
+      "title": "캐시 미스 경로",
+      "lead": "키가 없으면 DB에서 조회해야 합니다.",
+      "detail": "DB에서 읽은 값을 캐시에 채울 수 있지만 정책과 TTL에 따라 달라집니다. 슬라이더로 hit rate를 낮추고 DB 부하가 어떻게 바뀌는지 확인해 보세요.",
+      "activeNodes": [
+        "api",
+        "cache",
+        "db",
+        "result"
+      ],
+      "activeEdges": [
+        "lookup",
+        "miss",
+        "return"
+      ],
+      "insight": "캐시 미스가 급증할 때 DB에 요청이 몰리는 상황을 감안해야 합니다.",
+      "question": "캐시 hit rate가 90%에서 50%로 내려가면 DB 조회량은 몇 배가 될까요?"
+    },
+    {
+      "phase": "E",
+      "title": "적중률을 수치로 비교",
+      "lead": "가정이 같다면 DB 조회 요청 수 = 총 요청 수 × 미스 비율입니다.",
+      "detail": "아래 값은 요청량과 적중률에 의한 단순 산술입니다. 실제로는 키 분포와 요청 특성에 따라 성능이 달라집니다.",
+      "activeNodes": [
+        "clients",
+        "api",
+        "cache",
+        "db",
+        "result"
+      ],
+      "activeEdges": [
+        "call",
+        "lookup",
+        "hit",
+        "miss",
+        "return"
+      ],
+      "insight": "그럴듯한 애니메이션보다 명확한 가정과 정확한 계산이 중요합니다.",
+      "question": "캐시 hit rate가 95%이면 1,000 req/s 중 DB로 가는 요청은 몇 개일까요?"
+    },
+    {
+      "phase": "R",
+      "title": "동네 편의점 재고처럼",
+      "lead": "자주 필요한 물건을 가까이 두면 먼 창고 방문을 줄입니다.",
+      "detail": "캐시가 편의점 진열대, DB가 창고처럼 보일 수 있습니다. 하지만 컴퓨터 캐시는 TTL, 동시성, 일관성 문제를 가진다는 점에서 비유가 깨집니다.",
+      "activeNodes": [
+        "cache",
+        "db",
+        "result"
+      ],
+      "activeEdges": [
+        "hit",
+        "miss",
+        "return"
+      ],
+      "insight": "캐시 무효화가 어렵다는 사실까지 설명할 수 있어야 개념을 제대로 이해한 것입니다.",
+      "question": "오래된 캐시 데이터가 잘못된 결정을 만들 수 있는 서비스는 무엇일까요?"
+    }
+  ],
+  "model": {
+    "title": "적중률 실험 — DB 요청 수",
+    "description": "요청 1건마다 캐시 조회 1회, 캐시 미스마다 DB 조회 1회라는 단순 모델입니다.",
+    "inputs": [
+      {
+        "id": "rps",
+        "label": "전체 요청",
+        "min": 100,
+        "max": 3000,
+        "step": 100,
+        "value": 1000,
+        "unit": "req/s"
+      },
+      {
+        "id": "hit-rate",
+        "label": "캐시 적중률",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "value": 80,
+        "unit": "%"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "hits",
+        "label": "캐시 적중 요청",
+        "unit": "req/s",
+        "precision": 0,
+        "expr": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "var": "rps"
+                },
+                {
+                  "var": "hit-rate"
+                }
+              ]
+            },
+            100
+          ]
+        }
+      },
+      {
+        "id": "db-queries",
+        "label": "DB까지 가는 요청",
+        "unit": "req/s",
+        "precision": 0,
+        "expr": {
+          "op": "multiply",
+          "args": [
+            {
+              "var": "rps"
+            },
+            {
+              "op": "subtract",
+              "args": [
+                1,
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "var": "hit-rate"
+                    },
+                    100
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "quiz": {
+    "question": "전체 1,000 req/s, 캐시 hit rate 80%라면 이 단순 모델에서 DB 조회는?",
+    "options": [
+      "800 req/s",
+      "200 req/s",
+      "1,000 req/s",
+      "0 req/s"
+    ],
+    "answer": 1,
+    "explanation": "미스율은 20%이므로 DB 조회는 1,000 × 0.2 = 200 req/s입니다. 실제 서비스는 미스와 DB 조회가 반드시 1:1이 아닐 수 있습니다."
+  },
+  "analogy": {
+    "domain": "편의점과 물류 창고",
+    "works": "가까운 곳에 자주 필요한 항목을 배치해 먼 저장소 접근을 줄인다.",
+    "fails": "TTL, stale read, 동시성, 무효화 정책은 단순 매장 비유로 설명되지 않는다."
+  },
+  "sources": [
+    {
+      "title": "Redis caching overview",
+      "url": "https://redis.io/docs/latest/develop/use/patterns/"
+    },
+    {
+      "title": "AWS Caching strategies",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/"
+    }
+  ],
+  "footnote": "이 모형은 저장/조회 방식 학습용입니다. 실제 캐시·DB에 접속하지 않습니다."
+}

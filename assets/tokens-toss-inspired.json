@@ -1,0 +1,7 @@
+{
+  "description": "Original Toss-inspired educational interface tokens; not official Toss/TDS assets",
+  "colors": {"canvas":"#F5F7FA","surface":"#FFFFFF","stage":"#EAF2FF","primary":"#3182F6","text":"#191F28","muted":"#6B7684","border":"#E7EBF1","warning":"#F59E0B","danger":"#F04452"},
+  "radii": {"control":14,"card":26},
+  "motion": {"defaultSceneMilliseconds":5600,"beats":["cause","change","transfer","result"],"reducedMotion":"static-explanatory-end-state"},
+  "legal": "Inspired by general principles. No affiliation with Toss, no proprietary font/logo/icon/template copied."
+}
