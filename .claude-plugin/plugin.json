@@ -1,0 +1,11 @@
+{
+  "name": "alter-learning-studio",
+  "version": "0.1.0",
+  "description": "A.L.T.E.R.(조언자·사서·튜터·편집자·룸메이트) 방식으로 학습 계획을 세우고, 오프라인으로 열리는 모션그래픽 HTML 수업을 만들어 주는 스킬",
+  "author": {
+    "name": "sangwookp9591"
+  },
+  "repository": "https://github.com/sangwookp9591/alter-learning-studio",
+  "homepage": "https://github.com/sangwookp9591/alter-learning-studio",
+  "keywords": ["learning", "education", "self-study", "motion-graphics", "korean"]
+}

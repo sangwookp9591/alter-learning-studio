@@ -14,7 +14,7 @@
 
 <br/>
 
-<img src="examples/preview-toss-motion.png" alt="Pod가 늘어나면 요청은 어디로 갈까? — 모션그래픽 수업 화면" width="860" />
+<img src="skills/alter-learning-studio/examples/preview-toss-motion.png" alt="Pod가 늘어나면 요청은 어디로 갈까? — 모션그래픽 수업 화면" width="860" />
 
 <sub>예시 수업 화면 · 장면을 넘기고, 속도를 바꾸고, 퀴즈로 이해를 확인합니다</sub>
 
@@ -54,38 +54,44 @@
 
 ## 설치
 
-스킬은 `SKILL.md`가 들어 있는 폴더 단위입니다. 폴더 이름은 `alter-learning-studio`로 두세요.
+### 플러그인으로 설치 (권장)
 
-### Claude Code
+Claude Code 안에서 마켓플레이스를 등록하고 플러그인을 설치합니다.
 
-```bash
-# 모든 프로젝트에서 사용
-git clone https://github.com/sangwookp9591/alter-learning-studio.git \
-  ~/.claude/skills/alter-learning-studio
-
-# 현재 프로젝트에서만 사용
-mkdir -p .claude/skills
-git clone https://github.com/sangwookp9591/alter-learning-studio.git \
-  .claude/skills/alter-learning-studio
+```text
+/plugin marketplace add sangwookp9591/alter-learning-studio
+/plugin install alter-learning-studio@alter-learning-studio
 ```
 
-설치 후 `/reload-skills`를 실행하거나 새 세션을 시작하세요.
+한 줄로 설치할 수도 있습니다(Claude Code 2.1.275 이상).
 
-### Codex
-
-`agents/openai.yaml`이 포함되어 있습니다. 프로젝트의 `.agents/skills/`에 클론하세요. 전역 경로는 사용 중인 Codex 버전의 문서를 확인하세요.
-
-```bash
-mkdir -p .agents/skills
-git clone https://github.com/sangwookp9591/alter-learning-studio.git \
-  .agents/skills/alter-learning-studio
+```text
+/plugin install alter-learning-studio --marketplace sangwookp9591/alter-learning-studio
 ```
 
-### 업데이트
+설치 뒤 `/reload-plugins`를 실행하거나 새 세션을 열면 적용됩니다. 스킬은 플러그인 이름이 앞에 붙은 이름으로 호출됩니다.
+
+```text
+/alter-learning-studio:alter-learning-studio 주제: HTTP와 HTTPS의 차이 ...
+```
+
+업데이트는 `/plugin marketplace update alter-learning-studio` 후 다시 설치합니다.
+
+### 스킬 폴더만 복사해서 설치
+
+플러그인 없이 스킬 폴더만 쓰고 싶다면 저장소를 클론한 뒤 `skills/alter-learning-studio` 폴더를 복사하세요. 폴더 이름은 `alter-learning-studio`로 둡니다.
 
 ```bash
-cd ~/.claude/skills/alter-learning-studio && git pull
+git clone https://github.com/sangwookp9591/alter-learning-studio.git
+# Claude Code (모든 프로젝트)
+cp -R alter-learning-studio/skills/alter-learning-studio ~/.claude/skills/
+# Claude Code (현재 프로젝트만)
+mkdir -p .claude/skills && cp -R alter-learning-studio/skills/alter-learning-studio .claude/skills/
+# Codex (프로젝트의 .agents/skills/)
+mkdir -p .agents/skills && cp -R alter-learning-studio/skills/alter-learning-studio .agents/skills/
 ```
+
+`agents/openai.yaml`이 스킬 폴더에 포함되어 있습니다. Codex의 전역 경로는 사용 중인 Codex 버전의 문서를 확인하세요. 이 방식은 플러그인과 달리 이름 앞에 플러그인 이름이 붙지 않아 `/alter-learning-studio`로 호출합니다.
 
 ## 사용법
 
@@ -109,46 +115,48 @@ $alter-learning-studio
 먼저 2개 문제로 이해도를 진단하고 다음 실습을 제시해줘.
 ```
 
-Claude Code에서는 `$alter-learning-studio` 대신 `/alter-learning-studio`로 호출할 수 있습니다. 더 많은 프롬프트(시각화만 만들기, 전혀 다른 분야 학습, 여러 에이전트로 조사·구현·검증, 영상까지)는 [`PROMPTS_KO.md`](PROMPTS_KO.md)에 있습니다.
+Claude Code에서는 `$alter-learning-studio` 대신 `/alter-learning-studio:alter-learning-studio`(플러그인) 또는 `/alter-learning-studio`(폴더 복사)로 호출할 수 있습니다. 더 많은 프롬프트(시각화만 만들기, 전혀 다른 분야 학습, 여러 에이전트로 조사·구현·검증, 영상까지)는 [`PROMPTS_KO.md`](skills/alter-learning-studio/PROMPTS_KO.md)에 있습니다.
 
 ## 예시 수업 (직접 열어 보세요)
 
-저장소를 클론한 뒤 `examples/` 안의 HTML을 브라우저로 열면 됩니다. 서버나 설치가 필요 없습니다.
+저장소를 클론한 뒤 `skills/alter-learning-studio/examples/` 안의 HTML을 브라우저로 열면 됩니다. 서버나 설치가 필요 없습니다.
 
 <table>
 <tr>
 <td width="50%" align="center">
-<img src="examples/preview-cache-hit-rate.png" alt="캐시가 DB 요청을 얼마나 줄일까?" /><br/>
+<img src="skills/alter-learning-studio/examples/preview-cache-hit-rate.png" alt="캐시가 DB 요청을 얼마나 줄일까?" /><br/>
 <b>캐시가 DB 요청을 얼마나 줄일까?</b><br/>
-<sub><a href="examples/cache-hit-rate.html">cache-hit-rate.html</a> · 백엔드 / 캐싱</sub>
+<sub><a href="skills/alter-learning-studio/examples/cache-hit-rate.html">cache-hit-rate.html</a> · 백엔드 / 캐싱</sub>
 </td>
 <td width="50%" align="center">
-<img src="examples/preview-probability-expected-value.png" alt="확률과 기댓값" /><br/>
+<img src="skills/alter-learning-studio/examples/preview-probability-expected-value.png" alt="확률과 기댓값" /><br/>
 <b>확률과 기댓값</b><br/>
-<sub><a href="examples/probability-expected-value.html">probability-expected-value.html</a></sub>
+<sub><a href="skills/alter-learning-studio/examples/probability-expected-value.html">probability-expected-value.html</a></sub>
 </td>
 </tr>
 <tr>
 <td width="50%" align="center">
-<img src="examples/preview-toss-motion.png" alt="Pod가 늘어나면 요청은 어디로 갈까?" /><br/>
+<img src="skills/alter-learning-studio/examples/preview-toss-motion.png" alt="Pod가 늘어나면 요청은 어디로 갈까?" /><br/>
 <b>Pod가 늘어나면 요청은 어디로 갈까?</b><br/>
-<sub><a href="examples/kubernetes-service.html">kubernetes-service.html</a> · 인프라 / Kubernetes</sub>
+<sub><a href="skills/alter-learning-studio/examples/kubernetes-service.html">kubernetes-service.html</a> · 인프라 / Kubernetes</sub>
 </td>
 <td width="50%" align="center">
-<img src="examples/preview-toss-mobile.png" alt="모바일 화면" width="180" /><br/>
+<img src="skills/alter-learning-studio/examples/preview-toss-mobile.png" alt="모바일 화면" width="180" /><br/>
 <b>모바일 레이아웃</b><br/>
 <sub>좁은 화면에서도 가로 스크롤 없이 동작합니다</sub>
 </td>
 </tr>
 </table>
 
-전체 목록은 [`examples/index.html`](examples/index.html)에서 볼 수 있습니다.
+전체 목록은 [`examples/index.html`](skills/alter-learning-studio/examples/index.html)에서 볼 수 있습니다.
 
 ## 직접 수업 만들기
 
 수업은 실행 코드가 아니라 **데이터(JSON)** 로 정의합니다. 스크립트가 검증한 뒤 오프라인 HTML로 빌드합니다. 외부 패키지가 필요 없습니다.
 
 ```bash
+cd skills/alter-learning-studio
+
 # JSON 수업을 HTML로 빌드
 python3 scripts/build_lesson.py --input learning/lesson.json --output learning/lesson.html
 
@@ -164,7 +172,7 @@ python3 scripts/build_lesson.py \
 python3 scripts/validate_skill.py
 ```
 
-수업 JSON 형식은 [`references/lesson-schema.md`](references/lesson-schema.md)를 보세요. Playwright가 설치되어 있다면 `scripts/smoke_browser.py`로 브라우저 동작과 스크린샷도 점검할 수 있습니다.
+수업 JSON 형식은 [`references/lesson-schema.md`](skills/alter-learning-studio/references/lesson-schema.md)를 보세요. Playwright가 설치되어 있다면 `scripts/smoke_browser.py`로 브라우저 동작과 스크린샷도 점검할 수 있습니다.
 
 ## 지키는 원칙
 
@@ -179,28 +187,21 @@ python3 scripts/validate_skill.py
 
 ```text
 alter-learning-studio/
-├── SKILL.md                  # 스킬 진입점 (절차와 계약)
-├── PROMPTS_KO.md             # 바로 쓰는 한국어 프롬프트 모음
-├── agents/openai.yaml        # Codex 메타데이터
-├── assets/
-│   ├── player/player.html    # 오프라인 수업 플레이어 템플릿
-│   ├── tokens-toss-inspired.json
-│   ├── plan-template.md / progress-template.md
-│   └── examples/*.json       # 예시 수업 데이터
-├── references/
-│   ├── alter-framework.md    # 다섯 역할 상세
-│   ├── lesson-schema.md      # 수업 JSON 스키마
-│   ├── visualization-playbook.md
-│   ├── motion-graphics-contract.md
-│   ├── motion-production.md  # 영상 제작 흐름
-│   ├── toss-inspired-design.md
-│   ├── quality-gates.md
-│   └── sources.md
-├── scripts/                  # build_lesson / validate_skill / smoke_browser
-└── examples/                 # 빌드된 예시 HTML과 미리보기
+├── .claude-plugin/
+│   ├── marketplace.json          # 마켓플레이스 등록 정보
+│   └── plugin.json               # 플러그인 매니페스트
+├── README.md
+└── skills/alter-learning-studio/
+    ├── SKILL.md                  # 스킬 진입점 (절차와 계약)
+    ├── PROMPTS_KO.md             # 바로 쓰는 한국어 프롬프트 모음
+    ├── agents/openai.yaml        # Codex 메타데이터
+    ├── assets/                   # 플레이어 템플릿, 토큰, 예시 수업 JSON
+    ├── references/               # 다섯 역할, 스키마, 시각화·모션 가이드, 품질 기준
+    ├── scripts/                  # build_lesson / validate_skill / smoke_browser
+    └── examples/                 # 빌드된 예시 HTML과 미리보기
 ```
 
 ## 참고
 
 - 학습 효과의 크기는 블룸의 2 시그마 연구 인용이며, 이 스킬을 쓴 결과를 보장하지 않습니다.
-- 자료의 출처와 적용 한계는 [`references/sources.md`](references/sources.md)에 정리되어 있습니다.
+- 자료의 출처와 적용 한계는 [`references/sources.md`](skills/alter-learning-studio/references/sources.md)에 정리되어 있습니다.

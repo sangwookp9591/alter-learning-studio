@@ -1,0 +1,17 @@
+{
+  "name": "alter-learning-studio",
+  "owner": {
+    "name": "sangwookp9591"
+  },
+  "metadata": {
+    "description": "A.L.T.E.R. 학습 스튜디오 스킬 마켓플레이스"
+  },
+  "plugins": [
+    {
+      "name": "alter-learning-studio",
+      "source": "./",
+      "description": "A.L.T.E.R. 방식 학습 계획과 오프라인 모션그래픽 HTML 수업 생성 스킬",
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -26,7 +26,7 @@ def main():
     check(name.group(1)=='alter-learning-studio','name must match folder')
     check(1<=len(desc.group(1))<=1024,'description length out of bounds')
     check(len(skill.splitlines())<500,'skill instructions exceed 500 lines')
-    for p in ['README.md','references/alter-framework.md','references/lesson-schema.md','references/visualization-playbook.md','references/motion-production.md','references/quality-gates.md','references/sources.md','references/toss-inspired-design.md','references/motion-graphics-contract.md','assets/tokens-toss-inspired.json','assets/player/player.html','assets/plan-template.md','assets/progress-template.md']:
+    for p in ['references/alter-framework.md','references/lesson-schema.md','references/visualization-playbook.md','references/motion-production.md','references/quality-gates.md','references/sources.md','references/toss-inspired-design.md','references/motion-graphics-contract.md','assets/tokens-toss-inspired.json','assets/player/player.html','assets/plan-template.md','assets/progress-template.md']:
         check((ROOT/p).is_file(),p+' missing')
     lesson_files=sorted((ROOT/'assets'/'examples').glob('*.json'))
     check(len(lesson_files)>=3,'need cross-domain examples')
